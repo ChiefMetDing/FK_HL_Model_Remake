@@ -1,0 +1,5 @@
+# Adding config.py file.
+config.py
+
+# Any csv files
+*.csv
