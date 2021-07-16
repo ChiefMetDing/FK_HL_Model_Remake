@@ -3,3 +3,6 @@ config.py
 
 # Any csv files
 *.csv
+
+# Any geojson files
+*.geojson
