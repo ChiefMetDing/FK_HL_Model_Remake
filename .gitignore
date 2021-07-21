@@ -7,3 +7,6 @@ functions.py
 
 # Any geojson files
 *.geojson
+
+# Adding config.js file.
+config.js
