@@ -39,10 +39,28 @@ let myStyle = {
 }
 
 d3.json(cells).then(function(data){
-	console.log(data)
+	// console.log(data)
 	L.geoJSON(data,{
 		onEachFeature:function(feature,layer){
 			layer.bindPopup("<h2>Area Name: " + feature.properties.cell + "</h2><hr><h3>Lift: " + feature.properties.lift + "</h3>");
+			layer.on({
+				mouseover:function(event){
+					layer=event.target;
+					layer.setStyle({
+						fillOpacity:0.8
+					})
+				},
+				mouseout:function(event){
+					layer=event.target;
+					layer.setStyle({
+						fillOpacity:0.3
+					})
+				},
+				click:function(event){
+					layer = event.target;
+					map.fitBounds(layer.getBounds());
+				  },
+			});
 		},
 		style: myStyle
 	}).addTo(map)
