@@ -33,8 +33,8 @@ let map = L.map(mapID, {
 let cells = "../../../Resources/cells_map.geojson"
 
 let myStyle = {
-    color:"blue",
-    fillColor:"yellow",
+    color:"black",
+    fillColor:"gold",
     weight:1
 }
 
