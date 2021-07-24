@@ -10,3 +10,6 @@ functions.py
 
 # Adding config.js file.
 config.js
+
+# Add a playground
+playground.ipynb
