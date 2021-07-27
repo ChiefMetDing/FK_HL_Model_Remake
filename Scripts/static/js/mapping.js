@@ -30,7 +30,8 @@ let map = L.map(mapID, {
 	layers: [satelliteStreets]
 });
 
-let cells = "../../../Resources/cells_map.geojson"
+const cells_plg = "../../../Resources/cells_map.geojson"
+const cells_oz = "../../../Resources/cells_oz.json"
 
 let myStyle = {
     color:"black",
@@ -38,9 +39,20 @@ let myStyle = {
     weight:1
 }
 
-d3.json(cells).then(function(data){
+var promises = [d3.json(cells_plg),d3.json(cells_oz)]
+Promise.all(promises).then((dataAll)=>{
 	// console.log(data)
-	L.geoJSON(data,{
+	
+	//Converting all time stamps to dates
+	let cells_oz = dataAll[1]
+	let project_months = Object.keys(cells_oz)
+	let projectMonths = []
+	for (i=0;i<project_months.length;i++){
+		projectMonths.push(Date(project_months[i]))
+	}
+	//Creating cells polygon layer
+	let cells_plg = dataAll[0]
+	L.geoJSON(cells_plg,{
 		onEachFeature:function(feature,layer){
 			layer.bindPopup("<h2>Area Name: " + feature.properties.cell + "</h2><hr><h3>Lift: " + feature.properties.lift + "</h3>");
 			layer.on({
@@ -65,7 +77,6 @@ d3.json(cells).then(function(data){
 		style: myStyle
 	}).addTo(map)
 })
-
 
 
 L.control.layers(baseMaps).addTo(map);
