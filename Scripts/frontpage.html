@@ -38,12 +38,16 @@
             <div>
                 <h2>Charts</h2>
                 <p>* A drop down list for options: Overall view of the pad, and lift options</p>
+                <select id="select-month" onchange="monthSelect(this.value)"></select>
                 <p>* Plan to have a project life time actual gold production vs expected gold production in line chart by month.</p>
                 <p>* Have a detailed statistics of the selected lift, including a list of the cells on this lift, how much material and gold in each cell, leach on and off dates</p>
                 <p>* Detailed statistics of the selected cell, with a line chart of overall gold recoveries over time.</p>
             </div>
         </div>
     </div>
+
+    <!-- Date FNS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.min.js" integrity="sha512-F+u8eWHrfY8Xw9BLzZ8rG/0wIvs0y+JyRJrXjp3VjtFPylAEEGwKbua5Ip/oiVhaTDaDs4eU2Xtsxjs/9ag2bQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <!-- Leaflet JS -->
     <script 
