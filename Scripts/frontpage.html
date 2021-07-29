@@ -6,6 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Walter Heap Leach Dashboard</title>
+    <!-- Think About Using Bootstrap -->
+
+
     <!-- Leaflet CSS -->
     <link 
         rel="stylesheet" 
@@ -31,15 +34,18 @@
         </div>
         <div class="column">
             <div>
-                <h1>See How It Looks Like</h1>
-                <p>A little summary of what this is.</p>
+                <h1>Fort Knox Walter Creek Heap Leach Pad</h1>
+                <p>Gold recovery, production, remaining ounces</p>
             </div>
 
             <div>
                 <h2>Charts</h2>
-                <p>* A drop down list for options: Overall view of the pad, and lift options</p>
+                <h3>Monthly Gold Production</h3>
                 <select id="select-month" onchange="monthSelect(this.value)"></select>
-                <p>* Plan to have a project life time actual gold production vs expected gold production in line chart by month.</p>
+                <h3>Gold Production Profile</h3>
+                <p>Will need to add actual gold production line in this graph</p>
+                <div id="line-monthly"></div>
+                
                 <p>* Have a detailed statistics of the selected lift, including a list of the cells on this lift, how much material and gold in each cell, leach on and off dates</p>
                 <p>* Detailed statistics of the selected cell, with a line chart of overall gold recoveries over time.</p>
             </div>
@@ -59,6 +65,8 @@
     <script type="text/javascript" src="static/js/config.js"></script>
     <!-- Our Javascript -->
     <script type="text/javascript" src="static/js/mapping.js"></script>
+    <!-- Plotly -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     
 </body>
 </html>
