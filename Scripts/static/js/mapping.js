@@ -331,7 +331,7 @@ function position_gold(date,map,trigger){
 				thisBlock.addTo(blocksPad);
 				//console.log(latlng)
 			})
-			blockLayers['Blocks'] = blocksPad
+			//blockLayers['Blocks'] = blocksPad
 			//let printThis = blockLayers['Blocks']
 			//blocksPad._layers = {}
 			blocksPad.addTo(map)
