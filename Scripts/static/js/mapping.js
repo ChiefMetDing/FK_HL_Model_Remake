@@ -7,6 +7,7 @@ const cells_oz = "../../../Resources/cells_oz.json"
 const blocks_oz = "../../../Resources/blocks_oz.json"
 const actual_monthly_oz = "../../../Resources/actual_monthly_oz.json"
 const latlng_oz = "../../../Resources/latlng_oz.json"
+const position_remain_oz = "../../../Resources/position_remain_oz.geojson"
 
 // -----------------CREATE MAP--------------------------------------------------
 const mapCenter = [65.018, -147.36]//the center of the pad
@@ -20,160 +21,149 @@ let satelliteStreets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/sate
 			maxZoom: 18,
 			accessToken: API_KEY
 		});
-
-
 // Create baselayer
 let baseMaps = {
 	"Satellite Streets": satelliteStreets
-}
-
+};
 //Add overallPad as new layer
-let overallPad = new L.layerGroup()
-
-
+let overallPad = new L.layerGroup();
 let layers = {
 	'Overall Pad': {}
 };
-
-
 let baseStyle = {
     color:"black",
     fillColor:"gold",
     weight:1
-}
-
+};
 let testStyle = {
     color:"black",
     fillColor:"red",
     weight:1
-}
-
+};
 function monthStyle(cell){
 	let monthStyle = {
 			fillOpacity: cell/100	
 			}
 	return monthStyle
 }
-
-
 // Initial plot of cells on the pad
-var promises = [d3.json(cells_plg),d3.json(cells_oz)]
-Promise.all(promises).then((dataAll)=>{
-	let cells_plg = dataAll[0]
-	// Create overall look of the pad
-	let liftList = []
-	L.geoJSON(cells_plg,{
-		onEachFeature:function(feature,layer){
-			//console.log(feature)
-			// check if this lift is in the lift list, if not add this lift to the lift list
-			let lift = feature.properties.lift;
-			if (liftList.includes(lift)==false){
-				liftList.push(lift)
-			}
-
-			layer.bindPopup("<h2>Area Name: " + feature.properties.cell + "</h2><hr><h3>Lift: " + feature.properties.lift + "</h3>");
-			layer.on({
-				click:function(event){
-					layer = event.target;
-					map.fitBounds(layer.getBounds());
-				  },
-			});
-			console.log(layers)
-
-			layers['Overall Pad'][feature.properties.cell] = layer;
-		},
-		style: baseStyle
-	}).addTo(overallPad)
-	// overallPad.addTo(map)
-	// console.log(liftList)
-	// Create layers for each lift(What's the best way of doing this???)
-	liftList.forEach(lift =>{
-		//create a new layer
-		let liftlayer = new L.layerGroup()
-		layers[lift] = liftlayer//right?????????????????????
-
-		let copy = Object.assign({}, cells_plg);
-		copy['features'] = copy['features'].filter(d => d.properties.lift == lift);
+function padPlot(){
+	var promises = [d3.json(cells_plg),d3.json(cells_oz)]
+	Promise.all(promises).then((dataAll)=>{
+		//read blocks location ounces
+		// d3.json(latlng_oz).then((data)=>{
+		// 	let lat = data['lat']
+		// 	let lng = data['lng']
+		// 	let ozs = data['overall_ozs']
+		// 	let max_ozs = Math.max(...Object.values(ozs))
+		// 	//console.log(max_ozs)
+		// 	let lat_int = 0.00013000/2;
+		// 	let lng_int = 0.00039999/2;
+		// 	Object.keys(lat).forEach(row => {
+		// 		L.polygon([
+		// 			[lat[row] + lat_int, lng[row] + lng_int],
+		// 			[lat[row] - lat_int, lng[row] + lng_int],
+		// 			[lat[row] - lat_int, lng[row] - lng_int],
+		// 			[lat[row] + lat_int, lng[row] - lng_int]
+		// 		], 
+		// 		{
+		// 			color: 'nan', 
+		// 			fillColor: '#f03', 
+		// 			fillOpacity:ozs[row]/max_ozs
+		// 		}).addTo(map)
+		// 	})
+		// })
+		// d3.json(position_remain_oz).then(data=>{
+		// 	let positionData = data.features;
+		// 	positionData.forEach(p=>{
+		// 		let latlng = p.geometry.coordinates[0];
+		// 		let dateInfo = p.properties['2031-05'];
+		// 		L.polygon([
+		// 			latlng[0],
+		// 			latlng[1],
+		// 			latlng[2],
+		// 			latlng[3]
+		// 		],
+		// 		{
+		// 			color:'nan',
+		// 			fillColor:'red',
+		// 			fillOpacity:dateInfo/100
+		// 		}).addTo(map);
+		// 		//console.log(latlng)
+		// 	})
+		// 	//console.log(positionData)
+		// })
 		
-		L.geoJSON(copy,{
+
+		let cells_plg = dataAll[0];
+		//console.log(cells_plg)
+		// Create overall look of the pad
+		let liftList = [];
+		L.geoJSON(cells_plg,{
 			onEachFeature:function(feature,layer){
-				//console.log(feature)
-				if (feature.properties.lift == lift) {
-					layer.bindPopup("<h2>Area Name: " + feature.properties.cell + "</h2><hr><h3>Lift: " + feature.properties.lift + "</h3>");
-					layer.on({
-						mouseover:function(event){
-							layer=event.target;
-							layer.setStyle({
-								fillOpacity:0.8
-							})
-						},
-						mouseout:function(event){
-							layer=event.target;
-							layer.setStyle({
-								fillOpacity:0.3
-							})
-						},
-						click:function(event){
-							layer = event.target;
-							map.fitBounds(layer.getBounds());
-						},
-					});
-					layers[lift][feature.properties.cell] = layer;
-				}
+				// check if this lift is in the lift list, if not add this lift to the lift list
+				let lift = feature.properties.lift;
+				if (liftList.includes(lift)==false){
+					liftList.push(lift)
+				};
+				layer.bindPopup("<h2>Area Name: " + feature.properties.cell + "</h2><hr><h3>Lift: " + feature.properties.lift + "</h3>");
+				layer.on({
+					click:function(event){
+						layer = event.target;
+						map.fitBounds(layer.getBounds());
+					},
+				});
+				layers['Overall Pad'][feature.properties.cell] = layer;
 			},
-			style: testStyle
-		}).addTo(liftlayer)
-		// liftlayer.addTo(map)
-		
-	 })
-	//console.log(layers)
-	//layers[1].setStyle({ color: 'red' })
-	layers['Overall Pad'] = overallPad
-	//layers['First Lift'] = layers[1]
+			style: baseStyle
+		}).addTo(overallPad);
+		// overallPad.addTo(map)
+		// console.log(liftList)
+		// Create layers for each lift(What's the best way of doing this???)
+		liftList.forEach(lift =>{
+			//create a new layer
+			let liftlayer = new L.layerGroup();
+			layers[lift] = liftlayer;
 
-	// Create the map object with center, zoom level and default layer.
-	let map = L.map(mapID, {
-		center: mapCenter,
-		zoom: zoomLevel,
-		layers: [satelliteStreets, ...Object.values(layers)]
-	});
-
-	L.control.layers(layers).addTo(map);
-
-	
-	//read blocks location ounces
-	d3.json(latlng_oz).then((data)=>{
-		let lat = data['lat']
-		let lng = data['lng']
-		let ozs = data['overall_ozs']
-		let max_ozs = Math.max(...Object.values(ozs))
-		//console.log(max_ozs)
-		
-		let lat_int = 0.00013000;
-		let lng_int = 0.00039999;
-		Object.keys(lat).forEach(row => {
-			L.polygon([
-				[lat[row] + lat_int, lng[row] + lng_int],
-				[lat[row] - lat_int, lng[row] + lng_int],
-				[lat[row] - lat_int, lng[row] - lng_int],
-				[lat[row] + lat_int, lng[row] - lng_int]
-			], { color: 'red', fillColor: '#f03', fillOpacity:ozs[row]/max_ozs}).addTo(map)
+			let copy = Object.assign({}, cells_plg);
+			copy['features'] = copy['features'].filter(d => d.properties.lift == lift);
+			L.geoJSON(copy,{
+				onEachFeature:function(feature,layer){
+					//console.log(feature)
+					if (feature.properties.lift == lift) {
+						layer.bindPopup("<h2>Area Name: " + feature.properties.cell + "</h2><hr><h3>Lift: " + feature.properties.lift + "</h3>");
+						layer.on({
+							click:function(event){
+								layer = event.target;
+								map.fitBounds(layer.getBounds());
+							},
+						});
+						layers[lift][feature.properties.cell] = layer;
+					}
+				},
+				style: testStyle
+			}).addTo(liftlayer)
+			// liftlayer.addTo(map)
 		})
-
-	
-		
+		layers['Overall Pad'] = overallPad
+		//layers['First Lift'] = layers[1]
+		// Create the map object with center, zoom level and default layer.
+		let map = L.map(mapID, {
+			center: mapCenter,
+			zoom: zoomLevel,
+			layers: [satelliteStreets, ...Object.values(layers)]
+		});
+		position_gold('2020-05',map)
+		L.control.layers(layers).addTo(map);
 	})
-})
-//console.log(overallPad)
-
+	//console.log(overallPad)
+	}
 //-------------------------------------------------Create charts on the right
-
-
 
 // Initial Page
 function init(){
 	monthDropDownList();
-	// plotBlocksOz();
+	padPlot()
 }
 
 init()
@@ -201,9 +191,9 @@ function monthDropDownList(){
 			// let day = date.getUTCDate()
 			// let formattedDate = dateFns.format(new Date(year, month, day), 'MM/dd/yyyy')
 			monthsList.push(formattedDate)
-			monthDropDown.append('option')
-				.text(formattedDate)
-				.property('value',months[m])
+			// monthDropDown.append('option')
+			// 	.text(formattedDate)
+			// 	.property('value',months[m])
 		}
 		//---------------------------------------
 		//Create monthly production line chart
@@ -271,12 +261,11 @@ function monthDropDownList(){
 		};
 		let myPlot = document.getElementById("line-monthly");
 		Plotly.newPlot(myPlot,chartdata,layout);
-		function testFunc(data) {
-			console.log(data.points[0].x)
-		}
 		myPlot.on('plotly_click', testFunc);
 	})}
-
+	function testFunc(data) {
+		console.log(data.points[0].x)
+	}
 
 //This function will be triggered when a month was chosen from months dropdown list.
 function monthSelect(m){
@@ -295,5 +284,31 @@ function monthSelect(m){
 				monthStyle(cell)
 			)
 		})
+	})
+}
+
+
+// Gold remaining by position and date
+function position_gold(date,map){
+	
+	d3.json(position_remain_oz).then(data=>{
+		let positionData = data.features
+		positionData.forEach(p=>{
+			let latlng = p.geometry.coordinates[0];
+			let dateInfo = p.properties[date];
+			L.polygon([
+				latlng[0],
+				latlng[1],
+				latlng[2],
+				latlng[3]
+			],
+			{
+				color:'nan',
+				fillColor:'red',
+				fillOpacity:dateInfo/100
+			}).addTo(map);
+			//console.log(latlng)
+		})
+		//console.log(positionData)
 	})
 }
