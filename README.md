@@ -14,3 +14,5 @@
 - `ETL.ipynb` - Read local csv files and upload to database.
 - `HL_model.ipynb` - Read data from database and process the data.
 - `machine_learning.ipynb` - Read data from local csv and perform machine learning on the data.
+
+![Fort-Knox-Gold-Pour](https://user-images.githubusercontent.com/78275082/127793123-81dfcf1a-50d3-4d83-b99e-6b777cbf704e.jpg)
