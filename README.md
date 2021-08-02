@@ -28,4 +28,9 @@ The script also visualize monthly and cumulative gold productions on a line char
 
 - `machine_learning.ipynb` - Read data from local csv and perform machine learning on the data.
 
+## Unfinished Functions
+- **Parameters Tuning** - Script can compare modeled recovery vs actual recovery and adjust selected parameters to make the modeled data close to the actual production data.
+- **Life of Pad Remaining Ounces Heat Map** - Add a play button with a fucntion that iterate through all months of the pad life, updating the heat map on the pad to visualize the change of remaining ounces on the pad by location.
+- **Suggestions** - Provide suggestions on where should be leached next. (check where has the most remaining gold on the pad)
+
 ![Fort-Knox-Gold-Pour](https://user-images.githubusercontent.com/78275082/127793123-81dfcf1a-50d3-4d83-b99e-6b777cbf704e.jpg)
