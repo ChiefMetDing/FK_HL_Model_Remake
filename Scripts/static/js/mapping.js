@@ -27,9 +27,9 @@ let baseMaps = {
 };
 //Add overallPad as new layer
 let overallPad = new L.layerGroup();
-let layers = {
-	'Overall Pad': {}
-};
+let layers = {'Overall Pad': {}};
+//let blocksPad = new L.layerGroup();
+let blockLayers = {'Blocks':{}}
 let baseStyle = {
     color:"black",
     fillColor:"gold",
@@ -47,6 +47,15 @@ function monthStyle(cell){
 	return monthStyle
 }
 // Initial plot of cells on the pad
+
+let map = L.map(mapID, {
+	center: mapCenter,
+	zoom: zoomLevel,
+	layers: [satelliteStreets
+		//, ...Object.values(layers)
+	]
+});
+
 function padPlot(){
 	var promises = [d3.json(cells_plg),d3.json(cells_oz)]
 	Promise.all(promises).then((dataAll)=>{
@@ -96,13 +105,12 @@ function padPlot(){
 		
 
 		let cells_plg = dataAll[0];
-		//console.log(cells_plg)
 		// Create overall look of the pad
 		let liftList = [];
 		L.geoJSON(cells_plg,{
 			onEachFeature:function(feature,layer){
-				// check if this lift is in the lift list, if not add this lift to the lift list
 				let lift = feature.properties.lift;
+				// check if this lift is in the lift list, if not add this lift to the lift list
 				if (liftList.includes(lift)==false){
 					liftList.push(lift)
 				};
@@ -148,12 +156,15 @@ function padPlot(){
 		layers['Overall Pad'] = overallPad
 		//layers['First Lift'] = layers[1]
 		// Create the map object with center, zoom level and default layer.
-		let map = L.map(mapID, {
-			center: mapCenter,
-			zoom: zoomLevel,
-			layers: [satelliteStreets, ...Object.values(layers)]
-		});
-		position_gold('2020-05',map)
+		// let map = L.map(mapID, {
+		// 	center: mapCenter,
+		// 	zoom: zoomLevel,
+		// 	layers: [satelliteStreets
+		// 		//, ...Object.values(layers)
+		// 	]
+		// });
+		//console.log(layers['Overall Pad'])
+		
 		L.control.layers(layers).addTo(map);
 	})
 	//console.log(overallPad)
@@ -164,6 +175,7 @@ function padPlot(){
 function init(){
 	monthDropDownList();
 	padPlot()
+	position_gold('2019-01',map,false)
 }
 
 init()
@@ -264,7 +276,10 @@ function monthDropDownList(){
 		myPlot.on('plotly_click', testFunc);
 	})}
 	function testFunc(data) {
-		console.log(data.points[0].x)
+		let dateNumber = data.points[0].x.slice(0,7)
+		//console.log(dateNumber)
+		
+		position_gold(dateNumber,map,false)
 	}
 
 //This function will be triggered when a month was chosen from months dropdown list.
@@ -289,26 +304,41 @@ function monthSelect(m){
 
 
 // Gold remaining by position and date
-function position_gold(date,map){
-	
+function position_gold(date,map,trigger){
 	d3.json(position_remain_oz).then(data=>{
+		let blocksPad = new L.layerGroup();
 		let positionData = data.features
-		positionData.forEach(p=>{
-			let latlng = p.geometry.coordinates[0];
-			let dateInfo = p.properties[date];
-			L.polygon([
-				latlng[0],
-				latlng[1],
-				latlng[2],
-				latlng[3]
-			],
-			{
-				color:'nan',
-				fillColor:'red',
-				fillOpacity:dateInfo/100
-			}).addTo(map);
-			//console.log(latlng)
-		})
-		//console.log(positionData)
+		if (trigger){
+			//loop time intervals
+		}
+		else {
+			//blocksPad._layers = {}
+			map.removeLayer(blocksPad)
+			positionData.forEach(p=>{
+				let latlng = p.geometry.coordinates[0];
+				let dateInfo = p.properties[date];
+				let thisBlock = L.polygon([
+					latlng[0],
+					latlng[1],
+					latlng[2],
+					latlng[3]
+				],
+				{
+					color:'nan',
+					//fillColor:'red',
+					fillOpacity:dateInfo/100
+				})
+				thisBlock.addTo(blocksPad);
+				//console.log(latlng)
+			})
+			blockLayers['Blocks'] = blocksPad
+			//let printThis = blockLayers['Blocks']
+			//blocksPad._layers = {}
+			blocksPad.addTo(map)
+			// map.removeLayer(blocksPad)
+			// blocksPad.addTo(map)
+		}
 	})
+	
+
 }
