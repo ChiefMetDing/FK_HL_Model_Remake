@@ -180,6 +180,8 @@ function init(){
 
 init()
 
+let selectDate = '';//for later date selection on line chart
+
 // Create the dropdown list
 function monthDropDownList(){
 	var promises = [d3.json(cells_oz),d3.json(actual_monthly_oz)]
@@ -275,13 +277,13 @@ function monthDropDownList(){
 		Plotly.newPlot(myPlot,chartdata,layout);
 		myPlot.on('plotly_click', testFunc);
 	})}
-	function testFunc(data) {
-		let dateNumber = data.points[0].x.slice(0,7)
-		//console.log(dateNumber)
-		
-		position_gold(dateNumber,map,1)
-	}
-
+function testFunc(data) {
+	selectDate = data.points[0].x.slice(0,7)
+	position_gold(selectDate,map,1)
+}
+function play(){
+	position_gold(selectDate,map,2)
+}
 //This function will be triggered when a month was chosen from months dropdown list.
 function monthSelect(m){
 	//console.log(m + ` has been chosen`);
@@ -301,7 +303,6 @@ function monthSelect(m){
 		})
 	})
 }
-
 let blocksPad = new L.layerGroup();
 // Gold remaining by position and date
 function position_gold(date,map,trigger){
@@ -311,17 +312,9 @@ function position_gold(date,map,trigger){
 			//0 is initial setup
 			//1 is single click on the line chart
 			//2 is time lapse play
-		if (trigger == 2){
-			//loop time intervals
-		}
-		else if (trigger == 0) {
-			//blocksPad._layers = {}
-			// if (map.hasLayer(blocksPad)){
-			// 	console.log('this works');
-			// 	map.removeLayer(blocksPad);
-			// };
+		
+		if (trigger == 0) {
 			positionData.forEach((p,index)=>{
-				
 				let latlng = p.geometry.coordinates[0];
 				//let dateInfo = p.properties[date];
 				let thisBlock = L.polygon([
@@ -335,27 +328,17 @@ function position_gold(date,map,trigger){
 					fillColor:'yellow',
 					fillOpacity:0
 				})
-
-				//if(index == 10){console.log(thisBlock)}
 				thisBlock.addTo(blocksPad);
 				blockLayers['Blocks'][index] = thisBlock
-				//console.log(latlng)
 			})
 			//blockLayers['Blocks'] = blocksPad
-			//let printThis = blockLayers['Blocks']
-			//blocksPad._layers = {}
 			blocksPad.addTo(map)
-			
 			// map.removeLayer(blocksPad)
 			// blocksPad.addTo(map)
-			
 		}
 		else if (trigger == 1){
-			//console.log(blockLayers['Blocks'])
-			
 			positionData.forEach((p,index)=>{
 				let dateInfo = p.properties[date];
-				//console.log(dateInfo)
 				let targetP = blockLayers['Blocks'][index]
 				targetP.setStyle(
 					{
@@ -364,7 +347,26 @@ function position_gold(date,map,trigger){
 				)
 			})
 		}
+		else if (trigger == 2){
+			let timeLine = Object.keys(positionData[0]['properties'])
+			timeLine.forEach((date,mindex)=>{
+				//---------
+				//close eyes and count 1,2,3
+				//---------
+				positionData.forEach((p,pindex)=>{
+					let dateInfo = p.properties[date];
+					let targetP = blockLayers['Blocks'][pindex]
+					targetP.setStyle(
+						{
+							fillOpacity:dateInfo/200
+						}
+					)
+				})
+			})
+			//console.log("fine")
+			//console.log(Object.keys(positionData[0]['properties']))
+
+		}
 	})
-	
 
 }

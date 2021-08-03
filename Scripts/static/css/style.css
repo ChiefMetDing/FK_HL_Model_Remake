@@ -17,3 +17,21 @@ body,
 .column {
     width: 50%;
 }
+
+.button {
+    border:True;
+    color:white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    margin: 4px 2px;
+    cursor: pointer;
+    background-color:goldenrod;
+    transition-duration: 0.4s
+}
+.button:hover {
+    background-color:black;
+    color: white;
+  }
