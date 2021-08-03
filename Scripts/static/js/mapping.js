@@ -98,9 +98,7 @@ function padPlot(){
 		// 			fillColor:'red',
 		// 			fillOpacity:dateInfo/100
 		// 		}).addTo(map);
-		// 		//console.log(latlng)
 		// 	})
-		// 	//console.log(positionData)
 		// })
 		
 
@@ -121,12 +119,14 @@ function padPlot(){
 						map.fitBounds(layer.getBounds());
 					},
 				});
-				layers['Overall Pad'][feature.properties.cell] = layer;
+				layers['Overall Pad'][feature.properties.cell] = layer; // don't understand this line.
+				//console.log(layer)
 			},
 			style: baseStyle
+			
 		}).addTo(overallPad);
 		// overallPad.addTo(map)
-		// console.log(liftList)
+		//console.log(layers['Overall Pad'])
 		// Create layers for each lift(What's the best way of doing this???)
 		liftList.forEach(lift =>{
 			//create a new layer
@@ -175,7 +175,7 @@ function padPlot(){
 function init(){
 	monthDropDownList();
 	padPlot()
-	position_gold('2019-01',map,false)
+	position_gold('2019-01',map,0)
 }
 
 init()
@@ -193,7 +193,7 @@ function monthDropDownList(){
 		let months = Object.keys(modelData)
 		//Create project months list for line chart xaxis
 		let monthsList = []
-		let monthDropDown = d3.select("#select-month")
+		//let monthDropDown = d3.select("#select-month")
 		for (m=0;m<months.length;m++){
 			let date = new Date(parseInt(months[m]))
 			let month = (date.getUTCMonth()+1).toString()
@@ -279,7 +279,7 @@ function monthDropDownList(){
 		let dateNumber = data.points[0].x.slice(0,7)
 		//console.log(dateNumber)
 		
-		position_gold(dateNumber,map,false)
+		position_gold(dateNumber,map,1)
 	}
 
 //This function will be triggered when a month was chosen from months dropdown list.
@@ -302,21 +302,28 @@ function monthSelect(m){
 	})
 }
 
-
+let blocksPad = new L.layerGroup();
 // Gold remaining by position and date
 function position_gold(date,map,trigger){
 	d3.json(position_remain_oz).then(data=>{
-		let blocksPad = new L.layerGroup();
 		let positionData = data.features
-		if (trigger){
+		//trigger will be 0,1,2
+			//0 is initial setup
+			//1 is single click on the line chart
+			//2 is time lapse play
+		if (trigger == 2){
 			//loop time intervals
 		}
-		else {
+		else if (trigger == 0) {
 			//blocksPad._layers = {}
-			map.removeLayer(blocksPad)
-			positionData.forEach(p=>{
+			// if (map.hasLayer(blocksPad)){
+			// 	console.log('this works');
+			// 	map.removeLayer(blocksPad);
+			// };
+			positionData.forEach((p,index)=>{
+				
 				let latlng = p.geometry.coordinates[0];
-				let dateInfo = p.properties[date];
+				//let dateInfo = p.properties[date];
 				let thisBlock = L.polygon([
 					latlng[0],
 					latlng[1],
@@ -325,18 +332,37 @@ function position_gold(date,map,trigger){
 				],
 				{
 					color:'nan',
-					//fillColor:'red',
-					fillOpacity:dateInfo/100
+					fillColor:'yellow',
+					fillOpacity:0
 				})
+
+				//if(index == 10){console.log(thisBlock)}
 				thisBlock.addTo(blocksPad);
+				blockLayers['Blocks'][index] = thisBlock
 				//console.log(latlng)
 			})
 			//blockLayers['Blocks'] = blocksPad
 			//let printThis = blockLayers['Blocks']
 			//blocksPad._layers = {}
 			blocksPad.addTo(map)
+			
 			// map.removeLayer(blocksPad)
 			// blocksPad.addTo(map)
+			
+		}
+		else if (trigger == 1){
+			//console.log(blockLayers['Blocks'])
+			
+			positionData.forEach((p,index)=>{
+				let dateInfo = p.properties[date];
+				//console.log(dateInfo)
+				let targetP = blockLayers['Blocks'][index]
+				targetP.setStyle(
+					{
+						fillOpacity:dateInfo/200
+					}
+				)
+			})
 		}
 	})
 	
