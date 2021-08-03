@@ -13,6 +13,7 @@ const position_remain_oz = "../../../Resources/position_remain_oz.geojson"
 const mapCenter = [65.018, -147.36]//the center of the pad
 const zoomLevel = 15
 const mapID = 'mapid'
+const yMax = [] //this is for updating line chart.
 
 // Create the tile layer that will be the background of our map.
 let satelliteStreets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/tiles/{z}/{x}/{y}?access_token={accessToken}', 
@@ -230,6 +231,7 @@ function monthDropDownList(){
 			cumMontlyOzs.push(cumSumMonth)
 			cumActMonthlyOzs.push(cumActSumMonth)
 		}
+		yMax.push(Math.max(...monthlyOzs,...actMonthlyOzs)*1.1)
 		//console.log(monthlyOzs)
 		//console.log(cumActMonthlyOzs)
 		let traceMonthly = {
@@ -271,12 +273,13 @@ function monthDropDownList(){
 				title: 'Cumulative Ounces',
 				overlaying: 'y',
 				side: 'right'
-			  }
+			},
 		};
 		let myPlot = document.getElementById("line-monthly");
 		Plotly.newPlot(myPlot,chartdata,layout);
 		myPlot.on('plotly_click', testFunc);
 	})}
+
 function testFunc(data) {
 	selectDate = data.points[0].x.slice(0,7)
 	position_gold(selectDate,map,1)
@@ -296,8 +299,6 @@ function monthSelect(m){
 			let targetLayer = layers['Overall Pad'][i+1]
 			//console.log(targetLayer)
 			targetLayer.setStyle(
-				//{fillColor: 'violet',
-				//fillOpacity: cell/100}
 				monthStyle(cell)
 			)
 		})
@@ -325,7 +326,7 @@ function position_gold(date,map,trigger){
 				],
 				{
 					color:'nan',
-					fillColor:'yellow',
+					fillColor:'goldenrod',
 					fillOpacity:0
 				})
 				thisBlock.addTo(blocksPad);
@@ -337,6 +338,16 @@ function position_gold(date,map,trigger){
 			// blocksPad.addTo(map)
 		}
 		else if (trigger == 1){
+			vertiLine(date);
+			update(date);
+		}
+		else if (trigger == 2){
+			let timeLine = Object.keys(positionData[0]['properties']);
+			timeLine.forEach((date,mindex)=>{
+				setDelay(mindex ,date);
+			})
+		};
+		function update(date) {
 			positionData.forEach((p,index)=>{
 				let dateInfo = p.properties[date];
 				let targetP = blockLayers['Blocks'][index]
@@ -346,27 +357,33 @@ function position_gold(date,map,trigger){
 					}
 				)
 			})
-		}
-		else if (trigger == 2){
-			let timeLine = Object.keys(positionData[0]['properties'])
-			timeLine.forEach((date,mindex)=>{
-				//---------
-				//close eyes and count 1,2,3
-				//---------
-				positionData.forEach((p,pindex)=>{
-					let dateInfo = p.properties[date];
-					let targetP = blockLayers['Blocks'][pindex]
-					targetP.setStyle(
-						{
-							fillOpacity:dateInfo/200
-						}
-					)
-				})
-			})
-			//console.log("fine")
-			//console.log(Object.keys(positionData[0]['properties']))
-
-		}
+		};
+		function setDelay(i,date) {
+			setTimeout(function(){
+				vertiLine(date,400)
+				update(date);
+			}, i*50);
+		};
 	})
 
+};
+
+function vertiLine(date){
+	let myPlot = document.getElementById("line-monthly")
+	let layout = {
+		shapes: [{
+			type: 'line',
+			x0: date,
+			x1: date,
+			y0: 0,
+			y1: yMax[0], // use the max of the graph instead of a hard-coded value
+			line: {
+				color: 'grey',
+				width: 1.5,
+				dash: 'dot'
+			}
+		}]
+	};
+	Plotly.relayout(myPlot, layout);
 }
+
