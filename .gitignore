@@ -1,9 +1,17 @@
 # Adding config.py file.
 config.py
-functions.py
+# functions.py
 
 # Any csv files
-*.csv
+# *.csv
+blocks_table.csv
+cells_location.csv
+cells_table_fake.csv
+cells_table.csv
+dispatch_adjustment.csv
+monthly_oz.csv
+production_table.csv
+TetDc_Geochemistry.csv
 
 # Any geojson files
 # *.geojson
