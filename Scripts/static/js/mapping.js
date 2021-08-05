@@ -106,7 +106,10 @@ function padPlot(){
 		let cells_plg = dataAll[0];
 		// Create overall look of the pad
 		let liftList = [];
+		//console.log(cells_plg)
+		//L.geoJSON(position_remain_oz,{})
 		L.geoJSON(cells_plg,{
+			
 			onEachFeature:function(feature,layer){
 				let lift = feature.properties.lift;
 				// check if this lift is in the lift list, if not add this lift to the lift list
@@ -166,7 +169,7 @@ function padPlot(){
 		// });
 		//console.log(layers['Overall Pad'])
 		
-		L.control.layers(layers).addTo(map);
+		L.control.layers(baseMaps,layers).addTo(map);
 	})
 	//console.log(overallPad)
 	}
@@ -307,7 +310,9 @@ function monthSelect(m){
 let blocksPad = new L.layerGroup();
 // Gold remaining by position and date
 function position_gold(date,map,trigger){
+	
 	d3.json(position_remain_oz).then(data=>{
+		console.log(data)
 		let positionData = data.features
 		//trigger will be 0,1,2
 			//0 is initial setup
@@ -319,10 +324,10 @@ function position_gold(date,map,trigger){
 				let latlng = p.geometry.coordinates[0];
 				//let dateInfo = p.properties[date];
 				let thisBlock = L.polygon([
-					latlng[0],
-					latlng[1],
-					latlng[2],
-					latlng[3]
+					[latlng[0][1],latlng[0][0]],
+					[latlng[1][1],latlng[1][0]],
+					[latlng[2][1],latlng[2][0]],
+					[latlng[3][1],latlng[3][0]]
 				],
 				{
 					color:'nan',
