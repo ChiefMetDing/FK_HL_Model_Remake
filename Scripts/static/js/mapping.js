@@ -367,7 +367,7 @@ function position_gold(date,map,trigger){
 			setTimeout(function(){
 				vertiLine(date,400)
 				update(date);
-			}, i*50);
+			}, i*100);
 		};
 	})
 
